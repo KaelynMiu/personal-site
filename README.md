@@ -10,4 +10,4 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
-The `.github/workflows/pages.yml` workflow is ready to publish the site to GitHub Pages from the `main` branch. In the repository's Pages settings, choose **GitHub Actions** as the publishing source.
+The `.github/workflows/pages.yml` workflow deploys the site to GitHub Pages automatically when changes are pushed to the `main` branch. The live site is available at <https://kaelynmiu.github.io/personal-site/>.
