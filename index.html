@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e4eaf2">
+  <meta name="description" content="Kaelyn Miu — business data analytics, cross-border trade, research, and ideas in motion.">
+  <title>Kaelyn Miu — Data, Design & Ideas in Motion</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171a1f;
+      --muted: #69727e;
+      --soft: #87919d;
+      --paper: #e8edf4;
+      --paper-deep: #d6deea;
+      --line: rgba(25, 33, 43, .12);
+      --pill: rgba(255, 255, 255, .58);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: "Space Grotesk", "Inter", "Helvetica Neue", Arial, "PingFang SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(ellipse at 79% 42%, rgba(255,255,255,.58), transparent 35%),
+        linear-gradient(125deg, #e9edf3 0%, #dce4ee 47%, #d1dbe8 100%);
+      overflow-x: hidden;
+    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, a:focus-visible { outline: 2px solid #557da9; outline-offset: 4px; }
+
+    #rippleCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .site-shell { min-height: 100svh; position: relative; z-index: 1; }
+    .topbar {
+      position: fixed;
+      z-index: 8;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1460px, calc(100% - 72px));
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      pointer-events: none;
+    }
+    .topbar > * { pointer-events: auto; }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      width: max-content;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .15em;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #111316;
+      box-shadow: 0 5px 18px rgba(22, 29, 38, .13);
+    }
+    .brand-mark::before {
+      content: "";
+      display: block;
+      width: 12px;
+      height: 12px;
+      border: 1.4px solid #b9d3ba;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(172, 206, 175, .12);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px;
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 999px;
+      background: rgba(244,247,251,.58);
+      box-shadow: 0 10px 30px rgba(62,75,94,.04);
+      backdrop-filter: blur(12px);
+    }
+    .nav-link {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 17px;
+      color: #38414c;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 550;
+      transition: background .22s ease, color .22s ease, transform .22s ease;
+    }
+    .nav-link:hover { background: rgba(255,255,255,.8); color: #101317; transform: translateY(-1px); }
+    .top-cta {
+      justify-self: end;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      color: #f7f8fa;
+      background: #111316;
+      box-shadow: 0 8px 24px rgba(22, 29, 38, .15);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      transition: transform .22s ease, background .22s ease;
+    }
+    .top-cta:hover { transform: translateY(-2px); background: #2b3037; }
+    .top-cta span { color: #c8dfca; margin-left: 8px; font-size: 15px; }
+
+    .home-grid {
+      width: min(1510px, 100%);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: 96px 38px 28px;
+      display: grid;
+      grid-template-columns: minmax(360px, 42%) minmax(0, 58%);
+      align-items: stretch;
+      gap: 0;
+    }
+    .clay-stage {
+      align-self: end;
+      position: relative;
+      min-height: min(710px, calc(100svh - 128px));
+      height: calc(100svh - 124px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .clay-aura {
+      position: absolute;
+      z-index: 0;
+      bottom: 7%;
+      left: 10%;
+      width: 80%;
+      height: 17%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(139,157,183,.24), rgba(139,157,183,0) 72%);
+      filter: blur(12px);
+    }
+    .clay-video-frame {
+      position: relative;
+      z-index: 1;
+      width: min(440px, 95%);
+      height: min(670px, calc(100svh - 142px));
+      max-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+    .clay-canvas, .clay-fallback {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: 50% 48%;
+      background: transparent;
+    }
+    .clay-canvas { display: none; pointer-events: none; }
+    .clay-fallback { display: block; }
+    .clay-stage-note {
+      position: absolute;
+      left: 4%;
+      bottom: 6%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(53, 65, 79, .7);
+      font-size: 9px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #6c9c78;
+      box-shadow: 0 0 0 4px rgba(108,156,120,.13);
+    }
+
+    .right-panel {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 0 12px;
+      text-align: center;
+    }
+    .intro-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #788390;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    .intro-kicker::before, .intro-kicker::after {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: rgba(94, 107, 122, .35);
+    }
+    .name-heading {
+      margin: 13px 0 3px;
+      font-size: clamp(64px, 7.1vw, 102px);
+      font-weight: 700;
+      letter-spacing: -.075em;
+      line-height: .92;
+      white-space: nowrap;
+    }
+    .name-heading .light-name { color: #818a96; font-weight: 300; }
+    .name-subtitle {
+      color: #6a7480;
+      font-family: var(--serif);
+      font-size: 13px;
+      font-style: italic;
+      letter-spacing: .035em;
+    }
+    .work-wrap { width: 100%; margin-top: 21px; }
+    .work-head {
+      width: min(780px, 100%);
+      margin: 0 auto 3px;
+      padding: 0 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      color: #717c88;
+      text-align: left;
+    }
+    .work-head .section-tag {
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .work-head .section-index {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-style: italic;
+      color: #84909c;
+    }
+    .carousel-scene {
+      --card-w: 220px;
+      --card-h: 170px;
+      --radius: 300px;
+      position: relative;
+      width: min(840px, 100%);
+      height: 325px;
+      margin: 0 auto;
+      perspective: 1100px;
+      touch-action: pan-y;
+      cursor: grab;
+      outline: none;
+      overflow: visible;
+    }
+    .carousel-scene:active { cursor: grabbing; }
+    .carousel-ring {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .carousel-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--card-w);
+      height: var(--card-h);
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #dfe5ec;
+      box-shadow: 0 20px 40px rgba(52,65,83,.16), 0 2px 6px rgba(42,54,69,.08);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      cursor: pointer;
+      will-change: transform, opacity;
+      transition: box-shadow .25s ease, border-color .25s ease;
+    }
+    .carousel-card:hover { border-color: #fff; box-shadow: 0 24px 46px rgba(52,65,83,.21), 0 2px 6px rgba(42,54,69,.08); }
+    .card-image, .card-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .card-image { object-fit: cover; display: block; }
+    .card-image.photo-sydney { object-position: 50% 53%; }
+    .card-image.photo-guangzhou { object-position: 50% 57%; }
+    .card-image.photo-portrait { object-position: 50% 51%; }
+    .card-art {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 17px 17px 16px;
+      overflow: hidden;
+      text-align: left;
+      color: #1d2831;
+      background: var(--art);
+    }
+    .card-art::before, .card-art::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.58);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .card-art::before { width: 185px; height: 185px; top: -87px; right: -26px; }
+    .card-art::after { width: 120px; height: 120px; top: -55px; right: 7px; }
+    .art-mark {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      width: max-content;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 99px;
+      background: rgba(255,255,255,.35);
+      color: rgba(37,48,59,.72);
+      font-size: 8px;
+      font-weight: 650;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .art-mark::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(41,64,76,.5);
+    }
+    .art-title {
+      position: relative;
+      z-index: 1;
+      max-width: 88%;
+      margin: auto 0 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+    }
+    .art-sub {
+      position: relative;
+      z-index: 1;
+      margin-top: 6px;
+      color: rgba(38,48,58,.65);
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .card-label {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      z-index: 2;
+      max-width: calc(100% - 20px);
+      padding: 7px 10px 7px;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(18, 23, 29, .58);
+      text-align: left;
+      line-height: 1;
+      box-shadow: 0 3px 12px rgba(14,19,25,.1);
+    }
+    .card-label strong {
+      display: block;
+      overflow: hidden;
+      font-size: 9px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card-label span {
+      display: block;
+      margin-bottom: 4px;
+      color: rgba(255,255,255,.73);
+      font-size: 6.5px;
+      font-weight: 600;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    .art-label { color: #29323a; background: rgba(255,255,255,.6); border-color: rgba(255,255,255,.65); }
+    .art-label span { color: rgba(41,50,58,.6); }
+
+    .carousel-meta {
+      width: min(780px, 100%);
+      min-height: 42px;
+      margin: -2px auto 0;
+      padding: 0 6px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 14px;
+      align-items: center;
+      text-align: left;
+    }
+    .active-work-title {
+      overflow: hidden;
+      color: #29323b;
+      font-size: 12px;
+      font-weight: 650;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .active-work-description {
+      overflow: hidden;
+      margin-top: 3px;
+      color: #78828e;
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .carousel-count {
+      color: #76818d;
+      font-family: var(--serif);
+      font-size: 11px;
+      font-style: italic;
+      white-space: nowrap;
+    }
+    .carousel-controls { display: flex; gap: 5px; }
+    .carousel-arrow {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(57,69,84,.16);
+      border-radius: 50%;
+      background: rgba(255,255,255,.46);
+      color: #43505e;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .carousel-arrow:hover { background: #fff; transform: translateY(-1px); }
+    .carousel-hint {
+      margin-top: 7px;
+      color: #89939f;
+      font-size: 9px;
+      letter-spacing: .02em;
+    }
+    .profile-copy {
+      width: min(730px, 95%);
+      margin: 16px auto 0;
+      color: #66717e;
+      font-size: 10px;
+      font-weight: 450;
+      line-height: 1.72;
+    }
+    .profile-copy span { display: block; }
+    .profile-copy .profile-last { color: #485361; font-style: italic; }
+
+    .route-view[hidden] { display: none !important; }
+    .back-button {
+      pointer-events: auto;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 17px;
+      color: #fff;
+      background: #15181c;
+      box-shadow: 0 7px 22px rgba(26,33,42,.16);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .back-button:hover { transform: translateY(-1px); background: #343a42; }
+    .detail-view {
+      min-height: 100svh;
+      padding: 104px 7vw 70px;
+      background:
+        radial-gradient(ellipse at 74% 34%, rgba(255,255,255,.67), transparent 38%),
+        linear-gradient(135deg, #e9edf3 0%, #d4deea 100%);
+    }
+    .detail-top {
+      position: absolute;
+      top: 22px;
+      left: 24px;
+    }
+    .detail-content {
+      width: min(1060px, 100%);
+      min-height: calc(100svh - 174px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(270px, .9fr);
+      gap: clamp(35px, 7vw, 110px);
+      align-items: center;
+    }
+    .detail-kicker {
+      margin-bottom: 21px;
+      color: #7d8995;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .detail-title {
+      max-width: 640px;
+      margin: 0;
+      font-size: clamp(45px, 7vw, 84px);
+      font-weight: 650;
+      letter-spacing: -.07em;
+      line-height: .98;
+    }
+    .detail-title em { color: #818c98; font-family: var(--serif); font-size: .78em; font-weight: 400; letter-spacing: -.06em; }
+    .detail-description {
+      max-width: 610px;
+      margin: 25px 0 26px;
+      color: #5f6b78;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+    .detail-divider { width: 56px; height: 1px; background: rgba(64,79,96,.38); }
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 21px;
+    }
+    .detail-chip {
+      padding: 8px 12px;
+      border: 1px solid rgba(65,78,94,.16);
+      border-radius: 999px;
+      color: #64707c;
+      background: rgba(255,255,255,.32);
+      font-size: 9px;
+      letter-spacing: .04em;
+    }
+    .detail-art {
+      position: relative;
+      min-height: 350px;
+      aspect-ratio: 1.04;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,.76);
+      border-radius: 28px;
+      background: var(--detail-art, linear-gradient(135deg,#d8e4ec,#c1d1db 55%,#eadfd4));
+      box-shadow: 0 30px 65px rgba(48,65,84,.14);
+      overflow: hidden;
+    }
+    .detail-art::before, .detail-art::after {
+      content: "";
+      position: absolute;
+      width: 82%;
+      aspect-ratio: 1;
+      right: -32%;
+      top: -34%;
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 50%;
+    }
+    .detail-art::after { width: 57%; right: -19%; top: -19%; }
+    .detail-art-number {
+      position: relative;
+      z-index: 1;
+      color: rgba(42,56,68,.46);
+      font-family: var(--serif);
+      font-size: 13px;
+      font-style: italic;
+    }
+    .detail-art-title {
+      position: relative;
+      z-index: 1;
+      max-width: 400px;
+      margin: auto 0 0;
+      color: rgba(25,37,48,.82);
+      font-size: clamp(34px, 4.7vw, 62px);
+      font-weight: 550;
+      letter-spacing: -.07em;
+      line-height: .96;
+    }
+    .detail-art-footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 13px;
+      color: rgba(37,49,59,.63);
+      font-size: 9px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .detail-image {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      opacity: .88;
+    }
+    .detail-image + .detail-art-number, .detail-image ~ .detail-art-title, .detail-image ~ .detail-art-footer {
+      color: white;
+      text-shadow: 0 2px 15px rgba(0,0,0,.28);
+    }
+    .detail-image::after { content: ""; }
+    .detail-art.photo-card::after {
+      width: 100%;
+      height: 45%;
+      top: auto;
+      right: 0;
+      bottom: 0;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      background: linear-gradient(transparent, rgba(9,15,20,.42));
+    }
+    .detail-note {
+      margin-top: 27px;
+      color: #778390;
+      font-size: 10px;
+      letter-spacing: .05em;
+    }
+    .detail-back-inline { display: none; }
+
+    .contact-backdrop {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(24,31,40,.35);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+    .contact-backdrop.open { opacity: 1; visibility: visible; }
+    .contact-card {
+      width: min(440px, 100%);
+      padding: 37px 34px 28px;
+      border: 1px solid rgba(255,255,255,.86);
+      border-radius: 27px;
+      background: rgba(249,251,253,.94);
+      box-shadow: 0 28px 80px rgba(17,23,31,.22);
+      transform: translateY(14px) scale(.985);
+      transition: transform .28s cubic-bezier(.2,.75,.25,1);
+    }
+    .contact-backdrop.open .contact-card { transform: translateY(0) scale(1); }
+    .contact-overline {
+      color: #85909b;
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .contact-title {
+      margin: 9px 0 26px;
+      font-size: 43px;
+      font-weight: 650;
+      letter-spacing: -.075em;
+      line-height: 1;
+    }
+    .contact-list { margin: 0; padding: 0; list-style: none; }
+    .contact-item {
+      display: grid;
+      grid-template-columns: 73px minmax(0,1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 15px 0;
+      border-top: 1px solid rgba(31,41,52,.1);
+      font-size: 12px;
+    }
+    .contact-item dt { color: #89939e; }
+    .contact-item dd { margin: 0; color: #242b33; font-weight: 550; overflow-wrap: anywhere; }
+    .contact-item a { color: inherit; text-decoration: none; }
+    .contact-item a:hover { text-decoration: underline; }
+    .close-contact {
+      width: 100%;
+      margin-top: 21px;
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: #14171b;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: background .2s ease;
+    }
+    .close-contact:hover { background: #343a42; }
+
+    @media (max-width: 1100px) and (min-width: 901px) {
+      .home-grid { grid-template-columns: minmax(310px, 40%) minmax(0, 60%); padding-left: 24px; padding-right: 24px; }
+      .carousel-scene { --card-w: 190px; --card-h: 150px; --radius: 255px; height: 300px; }
+      .name-heading { font-size: clamp(58px, 7vw, 76px); }
+      .profile-copy { font-size: 9px; }
+      .carousel-meta, .work-head { width: 96%; }
+    }
+
+    @media (max-width: 900px) {
+      .topbar { top: 13px; width: calc(100% - 30px); }
+      .brand { gap: 0; }
+      .brand-copy { display: none; }
+      .brand-mark { width: 32px; height: 32px; }
+      .nav-links { gap: 2px; padding: 4px; }
+      .nav-link { padding: 9px 12px; font-size: 11px; }
+      .top-cta { padding: 11px 14px; font-size: 11px; }
+      .home-grid {
+        min-height: 100svh;
+        padding: 67px 17px 42px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .clay-stage {
+        order: 0;
+        width: 100%;
+        min-height: clamp(305px, 53vw, 410px);
+        height: clamp(305px, 53vw, 410px);
+        flex: 0 0 auto;
+        margin-top: 0;
+      }
+      .clay-video-frame { width: min(260px, 75vw); height: 100%; }
+      .clay-stage-note { left: 4%; bottom: 5%; }
+      .right-panel { order: 1; width: 100%; padding: 0; }
+      .name-heading { margin-top: 5px; font-size: clamp(54px, 10vw, 76px); }
+      .name-subtitle { font-size: 12px; }
+      .work-wrap { margin-top: 14px; }
+      .carousel-scene {
+        --card-w: 150px;
+        --card-h: 115px;
+        --radius: 190px;
+        width: 100%;
+        height: 250px;
+        perspective: 900px;
+      }
+      .carousel-card { border-radius: 16px; }
+      .carousel-meta, .work-head { width: min(600px, 100%); }
+      .profile-copy { width: min(620px, 98%); margin: 12px auto 0; font-size: 9.5px; }
+      .detail-view { padding: 88px 23px 55px; }
+      .detail-content { min-height: 0; grid-template-columns: 1fr; gap: 32px; }
+      .detail-art { width: min(560px, 100%); min-height: 260px; aspect-ratio: 1.4; margin: 0 auto; }
+      .detail-description { font-size: 14px; }
+      .detail-top { top: 15px; left: 15px; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { width: calc(100% - 22px); grid-template-columns: 28px 1fr auto; gap: 5px; }
+      .brand-mark { width: 28px; height: 28px; }
+      .nav-links { justify-self: center; }
+      .nav-link { padding: 8px 9px; font-size: 10px; }
+      .top-cta { padding: 10px 11px; font-size: 10px; white-space: nowrap; }
+      .top-cta span { margin-left: 4px; }
+      .home-grid { padding-left: 13px; padding-right: 13px; }
+      .clay-stage { min-height: clamp(300px, 91vw, 370px); height: clamp(300px, 91vw, 370px); }
+      .clay-video-frame { width: min(246px, 70vw); }
+      .clay-stage-note { left: 1%; font-size: 8px; }
+      .intro-kicker { font-size: 8px; }
+      .intro-kicker::before, .intro-kicker::after { width: 15px; }
+      .name-heading { font-size: clamp(48px, 12vw, 60px); }
+      .name-subtitle { font-size: 11px; }
+      .work-head .section-tag { font-size: 8px; }
+      .carousel-scene { --radius: 180px; height: 234px; }
+      .carousel-meta { grid-template-columns: minmax(0, 1fr) auto; gap: 9px; }
+      .carousel-controls { grid-column: 2; grid-row: 1; }
+      .carousel-count { display: none; }
+      .active-work-title { font-size: 11px; }
+      .active-work-description { font-size: 8px; }
+      .carousel-hint { font-size: 8px; }
+      .profile-copy { font-size: 8.5px; }
+      .detail-title { font-size: 49px; }
+      .detail-description { margin-top: 18px; font-size: 13px; }
+      .detail-art { min-height: 230px; border-radius: 22px; padding: 22px; }
+      .contact-card { padding: 31px 25px 23px; }
+      .contact-title { font-size: 39px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rippleCanvas" aria-hidden="true"></canvas>
+
+  <div class="site-shell">
+    <header class="topbar" id="topbar">
+      <a class="brand" href="#/" aria-label="Kaelyn Miu home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-copy">Kaelyn<br>Miu</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <button class="nav-link" type="button" data-scroll="profile">About</button>
+        <button class="nav-link" type="button" data-scroll="work-carousel">Work</button>
+        <button class="nav-link" type="button" data-contact-open>Contact</button>
+      </nav>
+      <button class="top-cta" type="button" data-contact-open>Get in touch <span aria-hidden="true">→</span></button>
+    </header>
+
+    <main class="home-grid route-view" id="homeView">
+      <section class="clay-stage" id="clayStage" aria-label="Animated clay character">
+        <div class="clay-aura" aria-hidden="true"></div>
+        <div class="clay-video-frame" id="clayFrame">
+          <canvas class="clay-canvas" id="clayCanvas" width="360" height="548" aria-label="Animated clay character responding to the pointer"></canvas>
+          <img class="clay-fallback" id="clayFallback" src="assets/clay-portrait-transparent.webp" alt="">
+        </div>
+        <div class="clay-stage-note"><span class="live-dot"></span> An idea in motion</div>
+      </section>
+
+      <section class="right-panel" aria-label="Kaelyn Miu portfolio">
+        <div class="intro-kicker">Analytics · Strategy · Design</div>
+        <h1 class="name-heading"><span>Kaelyn</span> <span class="light-name">Miu</span></h1>
+        <div class="name-subtitle">Clear thinking, thoughtful execution.</div>
+
+        <div class="work-wrap" id="work-carousel">
+          <div class="work-head">
+            <span class="section-tag">Selected work &amp; moments</span>
+            <span class="section-index">A little of everything</span>
+          </div>
+          <div class="carousel-scene" id="carouselScene" tabindex="0" role="region" aria-label="3D project carousel. Drag, scroll, or use the arrow keys to explore.">
+            <div class="carousel-ring" id="carouselRing">
+              <button class="carousel-card" type="button" data-index="0" aria-label="View Sydney photo story">
+                <img class="card-image photo-sydney" src="assets/sydney.webp" alt="Kaelyn in Sydney">
+                <span class="card-label"><span>Chapter · 02</span><strong>Sydney years</strong></span>
+              </button>
+              <button class="carousel-card" type="button" data-index="1" aria-label="View UNICEF donation response model">
+                <span class="card-art" style="--art: linear-gradient(135deg,#d7e2e8 0%,#bcced5 55%,#e7e0d5 100%)">
+                  <span class="art-mark">Research / 2025</span>
+                  <span class="art-title">Giving, more precisely.</span>
+                  <span class="art-sub">UNICEF · response modeling</span>
+                </span>
+                <span class="card-label art-label"><span>Data science · 03</span><strong>UNICEF response model</strong></span>
+              </button>
+              <button class="carousel-card" type="button" data-index="2" aria-label="View Southeast Asia beauty market research">
+                <span class="card-art" style="--art: linear-gradient(135deg,#e2d9d0 0%,#d7c8c2 48%,#e9e7df 100%)">
+                  <span class="art-mark">Market notes / 2025</span>
+                  <span class="art-title">A closer look at beauty.</span>
+                  <span class="art-sub">Southeast Asia · market entry</span>
+                </span>
+                <span class="card-label art-label"><span>Market insights · 04</span><strong>Beauty market research</strong></span>
+              </button>
+              <button class="carousel-card" type="button" data-index="3" aria-label="View Olist customer segmentation">
+                <span class="card-art" style="--art: linear-gradient(135deg,#d5ded7 0%,#c8d5cb 49%,#e1dfd4 100%)">
+                  <span class="art-mark">Customer study / 2024</span>
+                  <span class="art-title">People behind each order.</span>
+                  <span class="art-sub">Olist · lifecycle &amp; segments</span>
+                </span>
+                <span class="card-label art-label"><span>Customer analytics · 05</span><strong>Olist segmentation</strong></span>
+              </button>
+              <button class="carousel-card" type="button" data-index="4" aria-label="View Guangzhou photo story">
+                <img class="card-image photo-guangzhou" src="assets/guangzhou.webp" alt="Kaelyn exploring Guangzhou">
+                <span class="card-label"><span>City notes · 06</span><strong>Guangzhou, in passing</strong></span>
+              </button>
+              <button class="carousel-card" type="button" data-index="5" aria-label="View personal portrait story">
+                <img class="card-image photo-portrait" src="assets/portrait.webp" alt="A portrait of Kaelyn">
+                <span class="card-label"><span>Off the clock · 07</span><strong>Beyond the dashboard</strong></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="carousel-meta">
+            <div>
+              <div class="active-work-title" id="activeWorkTitle">Sydney years</div>
+              <div class="active-work-description" id="activeWorkDescription">A small collection of moments from the study years.</div>
+            </div>
+            <div class="carousel-count" id="carouselCount">01 / 06</div>
+            <div class="carousel-controls" aria-label="Carousel controls">
+              <button class="carousel-arrow" id="previousWork" type="button" aria-label="Previous project">←</button>
+              <button class="carousel-arrow" id="nextWork" type="button" aria-label="Next project">→</button>
+            </div>
+          </div>
+          <div class="carousel-hint">Drag to explore · Click the center card to view · Use ← → keys</div>
+        </div>
+
+        <div class="profile-copy" id="profile">
+          <span>ENTJ · 擅长以清晰目标和果断执行力统筹全局、驱动成果落地</span>
+          <span>Business Data Analytics, University of Sydney · Beta Gamma Sigma Honor Graduate</span>
+          <span>Full-time Lecturer, Cross-border E-commerce &amp; International Trade · Based in Guangzhou</span>
+          <span class="profile-last">Bridging China's cross-border trade with data, design &amp; AIGC.</span>
+        </div>
+      </section>
+    </main>
+
+    <section class="detail-view route-view" id="detailView" hidden>
+      <div class="detail-top"><button class="back-button" type="button" data-home>← Back home</button></div>
+      <div class="detail-content">
+        <div class="detail-copy">
+          <div class="detail-kicker" id="detailKicker">Selected work · 02</div>
+          <h2 class="detail-title" id="detailTitle">UNICEF response <em>model</em></h2>
+          <p class="detail-description" id="detailDescription"></p>
+          <div class="detail-divider"></div>
+          <div class="detail-meta" id="detailMeta"></div>
+          <div class="detail-note">A work in progress — more context and selected materials will be added here.</div>
+        </div>
+        <div class="detail-art" id="detailArt">
+          <div class="detail-art-number" id="detailArtNumber">02 / 07</div>
+          <div class="detail-art-title" id="detailArtTitle">Giving,<br>more precisely.</div>
+          <div class="detail-art-footer" id="detailArtFooter">UNICEF · Response modeling</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="contact-backdrop" id="contactBackdrop" role="presentation">
+    <section class="contact-card" role="dialog" aria-modal="true" aria-labelledby="contactTitle" aria-describedby="contactIntro">
+      <div class="contact-overline" id="contactIntro">Open to thoughtful conversations</div>
+      <h2 class="contact-title" id="contactTitle">Get in touch</h2>
+      <dl class="contact-list">
+        <div class="contact-item">
+          <dt>Phone</dt>
+          <dd><a href="tel:+8615112112200">+86 151 1211 2200</a></dd>
+        </div>
+        <div class="contact-item">
+          <dt>WeChat</dt>
+          <dd>kaelyn_Miu</dd>
+        </div>
+        <div class="contact-item">
+          <dt>Email</dt>
+          <dd><a href="mailto:Kaelynmiu@gmail.com">Kaelynmiu@gmail.com</a></dd>
+        </div>
+      </dl>
+      <button class="close-contact" id="closeContact" type="button">Close</button>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const projects = [
+        {
+          title: "Sydney years",
+          description: "A small collection of moments from the study years.",
+          routeTitle: "Sydney <em>years</em>",
+          routeDescription: "A visual note from the years around study and graduation — and the beginning of a longer curiosity about people, markets, and the decisions hidden in data.",
+          artTitle: "A chapter<br>in Sydney.",
+          artFooter: "Study · curiosity · new perspectives",
+          image: "assets/sydney.webp",
+          tags: ["Macquarie University", "University of Sydney", "Personal story"]
+        },
+        {
+          title: "UNICEF response model",
+          description: "Donation response prediction, audience insights and targeting.",
+          routeTitle: "UNICEF response <em>model</em>",
+          routeDescription: "For a direct-mail giving campaign, I worked with CRM and Australian Bureau of Statistics data to prepare features, compare decision tree, random forest and XGBoost models, and turn the findings into audience segments and practical campaign recommendations.",
+          artTitle: "Giving,<br>more precisely.",
+          artFooter: "UNICEF · Response modeling",
+          art: "linear-gradient(135deg,#d7e2e8 0%,#bcced5 55%,#e7e0d5 100%)",
+          tags: ["CRM + ABS data", "Predictive modeling", "SHAP"]
+        },
+        {
+          title: "Beauty market research",
+          description: "Southeast Asia beauty category research and market entry support.",
+          routeTitle: "Beauty market <em>research</em>",
+          routeDescription: "Compared market size and channel structures across Thailand, Indonesia and Vietnam for a Southeast Asia beauty expansion project. The work supported market-entry recommendations and translated product and category research into a clear business narrative.",
+          artTitle: "A closer look<br>at beauty.",
+          artFooter: "Southeast Asia · market entry",
+          art: "linear-gradient(135deg,#e2d9d0 0%,#d7c8c2 48%,#e9e7df 100%)",
+          tags: ["Thailand", "Indonesia", "Vietnam"]
+        },
+        {
+          title: "Olist segmentation",
+          description: "Customer groups and promotion strategy through the customer lifecycle.",
+          routeTitle: "Olist <em>segmentation</em>",
+          routeDescription: "An independent research project exploring customer segmentation and product promotion on the Olist platform, using lifecycle-oriented analysis to connect customer groups with more relevant engagement strategies.",
+          artTitle: "People behind<br>each order.",
+          artFooter: "Olist · Lifecycle & segments",
+          art: "linear-gradient(135deg,#d5ded7 0%,#c8d5cb 49%,#e1dfd4 100%)",
+          tags: ["Customer analytics", "Lifecycle", "Independent research"]
+        },
+        {
+          title: "Guangzhou, in passing",
+          description: "City notes from home.",
+          routeTitle: "Guangzhou, <em>in passing</em>",
+          routeDescription: "A quiet moment in the city that keeps me grounded while I move between teaching, research, and cross-border commerce.",
+          artTitle: "The city<br>between plans.",
+          artFooter: "Guangzhou · city notes",
+          image: "assets/guangzhou.webp",
+          tags: ["Guangzhou", "City notes", "Personal story"]
+        },
+        {
+          title: "Beyond the dashboard",
+          description: "A portrait from the other side of the workday.",
+          routeTitle: "Beyond the <em>dashboard</em>",
+          routeDescription: "A reminder that good work begins with curiosity about people and the places they live — long before a chart or model takes shape.",
+          artTitle: "Off the<br>clock.",
+          artFooter: "Personal notes · 2023",
+          image: "assets/portrait.webp",
+          tags: ["Life outside work", "Portrait", "Personal story"]
+        }
+      ];
+
+      const scene = document.getElementById("carouselScene");
+      const ring = document.getElementById("carouselRing");
+      const cards = Array.from(document.querySelectorAll(".carousel-card"));
+      const titleNode = document.getElementById("activeWorkTitle");
+      const descriptionNode = document.getElementById("activeWorkDescription");
+      const countNode = document.getElementById("carouselCount");
+      const step = 360 / projects.length;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let rotation = 0;
+      let targetRotation = 0;
+      let activeIndex = -1;
+      let dragging = false;
+      let dragStartX = 0;
+      let dragStartRotation = 0;
+      let lastMoveX = 0;
+      let lastMoveTime = 0;
+      let velocity = 0;
+      let wasDragged = false;
+      let suppressClick = false;
+
+      function mod(value, length) {
+        return ((value % length) + length) % length;
+      }
+
+      function circularDistance(a, b) {
+        const raw = Math.abs(a - b);
+        return Math.min(raw, projects.length - raw);
+      }
+
+      function equivalentIndex(index) {
+        const base = Math.round(rotation);
+        return index + Math.round((base - index) / projects.length) * projects.length;
+      }
+
+      function renderCarousel() {
+        const radius = parseFloat(getComputedStyle(scene).getPropertyValue("--radius")) || 300;
+        const nextActive = mod(Math.round(rotation), projects.length);
+        ring.style.transform = "rotateY(" + (-rotation * step) + "deg)";
+
+        cards.forEach(function (card, index) {
+          const distance = circularDistance(index, nextActive);
+          const opacity = [1, .86, .58, .27][distance] || .15;
+          const scale = [1, .9, .8, .72][distance] || .68;
+          card.style.transform = "translate(-50%, -50%) rotateY(" + (index * step) + "deg) translateZ(" + radius + "px) scale(" + scale + ")";
+          card.style.opacity = String(opacity);
+          card.style.zIndex = String(20 - distance);
+          card.setAttribute("aria-pressed", index === nextActive ? "true" : "false");
+        });
+
+        if (nextActive !== activeIndex) {
+          activeIndex = nextActive;
+          const item = projects[activeIndex];
+          titleNode.textContent = item.title;
+          descriptionNode.textContent = item.description;
+          countNode.textContent = String(activeIndex + 1).padStart(2, "0") + " / " + String(projects.length).padStart(2, "0");
+        }
+      }
+
+      function animateCarousel() {
+        if (!dragging) {
+          const difference = targetRotation - rotation;
+          if (Math.abs(difference) > .001) {
+            rotation += difference * (reduceMotion ? 1 : .16);
+          } else {
+            rotation = targetRotation;
+          }
+        }
+        renderCarousel();
+        window.requestAnimationFrame(animateCarousel);
+      }
+
+      function setTarget(index) {
+        targetRotation = index;
+        renderCarousel();
+      }
+
+      cards.forEach(function (card, index) {
+        card.addEventListener("click", function () {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
+          const current = mod(Math.round(rotation), projects.length);
+          if (index === current && Math.abs(rotation - targetRotation) < .08) {
+            navigateToWork(index);
+          } else {
+            setTarget(equivalentIndex(index));
+          }
+        });
+      });
+
+      scene.addEventListener("pointerdown", function (event) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        dragging = true;
+        wasDragged = false;
+        dragStartX = event.clientX;
+        lastMoveX = event.clientX;
+        lastMoveTime = performance.now();
+        dragStartRotation = rotation;
+        velocity = 0;
+        scene.setPointerCapture(event.pointerId);
+      });
+
+      scene.addEventListener("pointermove", function (event) {
+        if (!dragging) return;
+        const now = performance.now();
+        const deltaX = event.clientX - dragStartX;
+        if (Math.abs(deltaX) > 6) wasDragged = true;
+        rotation = dragStartRotation - deltaX / 150;
+        targetRotation = rotation;
+        const elapsed = Math.max(1, now - lastMoveTime);
+        const moveDelta = event.clientX - lastMoveX;
+        velocity = (-moveDelta / 150) / (elapsed / 1000);
+        lastMoveX = event.clientX;
+        lastMoveTime = now;
+      });
+
+      function finishDrag() {
+        if (!dragging) return;
+        dragging = false;
+        if (wasDragged) {
+          targetRotation = Math.round(rotation + Math.max(-2.4, Math.min(2.4, velocity * .11)));
+          suppressClick = true;
+          window.setTimeout(function () { suppressClick = false; }, 80);
+        } else {
+          targetRotation = Math.round(rotation);
+        }
+      }
+      scene.addEventListener("pointerup", finishDrag);
+      scene.addEventListener("pointercancel", finishDrag);
+      scene.addEventListener("lostpointercapture", finishDrag);
+
+      scene.addEventListener("wheel", function (event) {
+        event.preventDefault();
+        const direction = Math.sign(event.deltaY || event.deltaX);
+        if (direction) targetRotation = Math.round(rotation) + direction;
+      }, { passive: false });
+
+      scene.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          targetRotation = Math.round(rotation) - 1;
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          targetRotation = Math.round(rotation) + 1;
+        } else if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          navigateToWork(mod(Math.round(rotation), projects.length));
+        }
+      });
+
+      document.getElementById("previousWork").addEventListener("click", function () {
+        targetRotation = Math.round(rotation) - 1;
+      });
+      document.getElementById("nextWork").addEventListener("click", function () {
+        targetRotation = Math.round(rotation) + 1;
+      });
+
+      function navigateToWork(index) {
+        window.location.hash = "#/work/" + index;
+      }
+
+      function goHome(scrollTarget) {
+        if (window.location.hash !== "#/") window.location.hash = "#/";
+        else showRoute();
+        if (scrollTarget) {
+          window.setTimeout(function () {
+            const target = document.getElementById(scrollTarget);
+            if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          }, 80);
+        }
+      }
+
+      const homeView = document.getElementById("homeView");
+      const detailView = document.getElementById("detailView");
+      const topbar = document.getElementById("topbar");
+      const detailTitle = document.getElementById("detailTitle");
+      const detailDescription = document.getElementById("detailDescription");
+      const detailKicker = document.getElementById("detailKicker");
+      const detailArt = document.getElementById("detailArt");
+      const detailArtNumber = document.getElementById("detailArtNumber");
+      const detailArtTitle = document.getElementById("detailArtTitle");
+      const detailArtFooter = document.getElementById("detailArtFooter");
+      const detailMeta = document.getElementById("detailMeta");
+
+      function showRoute() {
+        let hash = window.location.hash || "#/";
+        if (hash === "#") hash = "#/";
+        const match = hash.match(/^#\/work\/(\d)$/);
+        homeView.hidden = true;
+        detailView.hidden = true;
+        topbar.hidden = true;
+        document.body.classList.remove("home-route");
+
+        if (!match) {
+          homeView.hidden = false;
+          topbar.hidden = false;
+          document.body.classList.add("home-route");
+          return;
+        }
+
+        const index = Math.max(0, Math.min(projects.length - 1, Number(match[1])));
+        const item = projects[index];
+        detailView.hidden = false;
+        detailKicker.textContent = "Selected work · " + String(index + 1).padStart(2, "0");
+        detailTitle.innerHTML = item.routeTitle;
+        detailDescription.textContent = item.routeDescription || "Project details coming soon.";
+        detailArtNumber.textContent = String(index + 1).padStart(2, "0") + " / " + String(projects.length).padStart(2, "0");
+        detailArtTitle.innerHTML = item.artTitle;
+        detailArtFooter.textContent = item.artFooter;
+        detailMeta.replaceChildren();
+
+        if (item.image) {
+          detailArt.style.setProperty("--detail-art", "linear-gradient(135deg,#dce4ed,#cbd6e1)");
+          detailArt.classList.add("photo-card");
+          const existingImage = detailArt.querySelector(".detail-image");
+          if (existingImage) existingImage.remove();
+          const image = document.createElement("img");
+          image.src = item.image;
+          image.alt = "";
+          image.className = "detail-image";
+          detailArt.prepend(image);
+        } else {
+          detailArt.classList.remove("photo-card");
+          detailArt.style.setProperty("--detail-art", item.art);
+          const existingImage = detailArt.querySelector(".detail-image");
+          if (existingImage) existingImage.remove();
+        }
+
+        item.tags.forEach(function (tag) {
+          const chip = document.createElement("span");
+          chip.className = "detail-chip";
+          chip.textContent = tag;
+          detailMeta.append(chip);
+        });
+      }
+
+      window.addEventListener("hashchange", showRoute);
+      document.querySelectorAll("[data-home]").forEach(function (button) {
+        button.addEventListener("click", function () { goHome(); });
+      });
+      document.querySelectorAll("[data-scroll]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          const id = button.getAttribute("data-scroll");
+          if (window.location.hash !== "#/") {
+            window.location.hash = "#/";
+            window.setTimeout(function () {
+              const target = document.getElementById(id);
+              if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+            }, 90);
+          } else {
+            const target = document.getElementById(id);
+            if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          }
+        });
+      });
+
+      const backdrop = document.getElementById("contactBackdrop");
+      const closeContact = document.getElementById("closeContact");
+      let lastFocused = null;
+      function openContact() {
+        lastFocused = document.activeElement;
+        backdrop.classList.add("open");
+        window.setTimeout(function () { closeContact.focus(); }, 40);
+      }
+      function closeContactModal() {
+        backdrop.classList.remove("open");
+        if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+      }
+      document.querySelectorAll("[data-contact-open]").forEach(function (button) {
+        button.addEventListener("click", openContact);
+      });
+      closeContact.addEventListener("click", closeContactModal);
+      backdrop.addEventListener("click", function (event) {
+        if (event.target === backdrop) closeContactModal();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && backdrop.classList.contains("open")) closeContactModal();
+      });
+
+      const clayCanvas = document.getElementById("clayCanvas");
+      const clayContext = clayCanvas.getContext("2d", { alpha: true });
+      const clayFallback = document.getElementById("clayFallback");
+      const clayFrame = document.getElementById("clayFrame");
+      const clayAtlas = new Image();
+      const clayFrameWidth = 360;
+      const clayFrameHeight = 548;
+      const clayFrameCount = 106;
+      const clayAtlasColumns = 11;
+      let clayAtlasReady = false;
+      let targetFrame = 14;
+      let currentFrame = 14;
+      let parallaxX = 0;
+      let parallaxY = 0;
+      let targetParallaxX = 0;
+      let targetParallaxY = 0;
+      let lastClayAnimationTime = 0;
+      clayContext.imageSmoothingEnabled = true;
+      clayContext.imageSmoothingQuality = "high";
+
+      function drawClayFrame(position) {
+        if (!clayAtlasReady) return;
+        const safePosition = Math.max(0, Math.min(clayFrameCount - 1, position));
+        const firstFrame = Math.floor(safePosition);
+        const secondFrame = Math.min(firstFrame + 1, clayFrameCount - 1);
+        const blend = safePosition - firstFrame;
+        const drawFrame = function (frame, alpha) {
+          const column = frame % clayAtlasColumns;
+          const row = Math.floor(frame / clayAtlasColumns);
+          clayContext.globalAlpha = alpha;
+          clayContext.drawImage(
+            clayAtlas,
+            column * clayFrameWidth, row * clayFrameHeight, clayFrameWidth, clayFrameHeight,
+            0, 0, clayCanvas.width, clayCanvas.height
+          );
+        };
+        clayContext.clearRect(0, 0, clayCanvas.width, clayCanvas.height);
+        clayContext.globalCompositeOperation = "lighter";
+        drawFrame(firstFrame, 1 - blend);
+        if (secondFrame !== firstFrame && blend > .001) drawFrame(secondFrame, blend);
+        clayContext.globalAlpha = 1;
+        clayContext.globalCompositeOperation = "source-over";
+      }
+
+      clayAtlas.onload = function () {
+        clayAtlasReady = true;
+        clayFallback.style.display = "none";
+        clayCanvas.style.display = "block";
+        drawClayFrame(currentFrame);
+      };
+      clayAtlas.onerror = function () {
+        clayCanvas.style.display = "none";
+        clayFallback.style.display = "block";
+      };
+      clayAtlas.src = "assets/clay-atlas.webp";
+
+      function scrubFromPointer(event) {
+        if (event.pointerType === "touch" || event.pointerType === "pen") {
+          targetFrame = 14;
+          targetParallaxX = 0;
+          targetParallaxY = 0;
+          return;
+        }
+        if (event.target && typeof event.target.closest === "function" && event.target.closest("#work-carousel")) {
+          targetFrame = 14;
+          targetParallaxX = 0;
+          targetParallaxY = 0;
+          return;
+        }
+        const rect = clayFrame.getBoundingClientRect();
+        const padding = 120;
+        const left = rect.left - parallaxX;
+        const top = rect.top - parallaxY;
+        const within = event.clientX >= left - padding && event.clientX <= left + rect.width + padding &&
+          event.clientY >= top - 80 && event.clientY <= top + rect.height + 80;
+        if (!within) {
+          targetFrame = 14;
+          targetParallaxX = 0;
+          targetParallaxY = 0;
+          return;
+        }
+        const progress = Math.max(0, Math.min(1, (event.clientX - left) / rect.width));
+        targetFrame = progress * (clayFrameCount - 1);
+        targetParallaxX = Math.max(-1, Math.min(1, (event.clientX - (left + rect.width / 2)) / (rect.width / 2))) * 5;
+        targetParallaxY = Math.max(-1, Math.min(1, (event.clientY - (top + rect.height / 2)) / (rect.height / 2))) * 3;
+      }
+
+      window.addEventListener("pointermove", scrubFromPointer);
+      window.addEventListener("pointerout", function (event) {
+        if (!event.relatedTarget) {
+          targetFrame = 14;
+          targetParallaxX = 0;
+          targetParallaxY = 0;
+        }
+      });
+
+      function animateClay(timestamp) {
+        const delta = lastClayAnimationTime ? Math.min(timestamp - lastClayAnimationTime, 50) : 16.67;
+        lastClayAnimationTime = timestamp;
+        const frameEase = reduceMotion ? 1 : 1 - Math.exp(-delta / 115);
+        const parallaxEase = reduceMotion ? 1 : 1 - Math.exp(-delta / 170);
+        currentFrame += (targetFrame - currentFrame) * frameEase;
+        if (Math.abs(targetFrame - currentFrame) < .008) currentFrame = targetFrame;
+        drawClayFrame(currentFrame);
+        parallaxX += (targetParallaxX - parallaxX) * parallaxEase;
+        parallaxY += (targetParallaxY - parallaxY) * parallaxEase;
+        clayFrame.style.transform = "translate3d(" + parallaxX.toFixed(2) + "px," + parallaxY.toFixed(2) + "px,0)";
+        window.requestAnimationFrame(animateClay);
+      }
+
+      const canvas = document.getElementById("rippleCanvas");
+      const context = canvas.getContext("2d");
+      let ripples = [];
+      let lastRipplePoint = null;
+      let canvasWidth = 0;
+      let canvasHeight = 0;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+
+      function resizeCanvas() {
+        canvasWidth = window.innerWidth;
+        canvasHeight = window.innerHeight;
+        canvas.width = Math.round(canvasWidth * pixelRatio);
+        canvas.height = Math.round(canvasHeight * pixelRatio);
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      window.addEventListener("pointermove", function (event) {
+        if (reduceMotion || event.pointerType === "touch") return;
+        const point = { x: event.clientX, y: event.clientY };
+        if (!lastRipplePoint || Math.hypot(point.x - lastRipplePoint.x, point.y - lastRipplePoint.y) > 50) {
+          ripples.push({ x: point.x, y: point.y, time: performance.now() });
+          lastRipplePoint = point;
+        }
+      });
+
+      function animateRipples(now) {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        ripples = ripples.filter(function (ripple) { return now - ripple.time < 1500; });
+        ripples.forEach(function (ripple) {
+          const progress = (now - ripple.time) / 1500;
+          const fade = 1 - progress;
+          const outer = progress * 160;
+          const innerProgress = Math.max(0, progress - .16) / .84;
+          const inner = innerProgress * 116;
+          context.beginPath();
+          context.arc(ripple.x, ripple.y, outer, 0, Math.PI * 2);
+          context.strokeStyle = "rgba(255,255,255," + (.43 * fade) + ")";
+          context.lineWidth = 2.5 * fade;
+          context.stroke();
+          if (progress > .16) {
+            context.beginPath();
+            context.arc(ripple.x, ripple.y, inner, 0, Math.PI * 2);
+            context.strokeStyle = "rgba(116,153,190," + (.3 * fade) + ")";
+            context.lineWidth = 1.5 * fade;
+            context.stroke();
+          }
+        });
+        if (ripples.length) window.requestAnimationFrame(animateRipples);
+        else context.clearRect(0, 0, canvasWidth, canvasHeight);
+      }
+      window.addEventListener("pointermove", function () {
+        if (!reduceMotion && ripples.length === 1) window.requestAnimationFrame(animateRipples);
+      });
+
+      renderCarousel();
+      window.requestAnimationFrame(animateCarousel);
+      window.requestAnimationFrame(animateClay);
+      showRoute();
+    })();
+  </script>
+</body>
+</html>
